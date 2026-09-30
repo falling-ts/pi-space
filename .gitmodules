@@ -1,0 +1,4 @@
+[submodule "refs/pi"]
+	path = refs/pi
+	url = https://github.com/earendil-works/pi
+	branch = main

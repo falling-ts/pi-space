@@ -1,0 +1,55 @@
+# ============================================================
+# pi agent 空间 —— 忽略规则
+# 说明：refs/ 下的上游源码通过 git submodule 跟踪（见 .gitmodules），
+#       父仓库只记录 commit 指针，因此这里不需要忽略 refs/pi/。
+# ============================================================
+
+# ---------- 依赖与构建产物 ----------
+node_modules/
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+.turbo/
+.cache/
+
+# ---------- 日志与临时文件 ----------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*~
+
+# ---------- 环境变量与密钥 ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets/
+
+# ---------- 编辑器与系统 ----------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- agent 运行期状态（保留目录说明，忽略内容） ----------
+.agents/tmp/
+.agents/cache/
+.agents/.cache/
+.agents/scratch/
+.agents/sessions/
+*.local
