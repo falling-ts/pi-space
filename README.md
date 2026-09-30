@@ -45,13 +45,15 @@ git submodule add -b main <repo-url> refs/<name>
 
 ## 本地 pi 命令
 
-仓库根目录放了三个启动器，从源码直跑上游 pi（等价于上游 `pi-test.ps1` 的调用方式：`node --import <source-resolver> packages/coding-agent/src/cli.ts`，不编译、不安装到全局，也不改 PATH）：
+仓库根目录放了三个启动器，从源码直跑上游 pi（等价于上游 `pi-test.ps1` 的调用方式：`node --import <source-resolver> packages/coding-agent/src/cli.ts`，不编译、不安装到全局）：
 
-| 文件 | 适用 shell | 在仓库根输入 |
+| 文件 | 由谁使用 | 输入 |
 | --- | --- | --- |
-| `pi.cmd` | cmd.exe（会搜索当前目录） | `pi` |
-| `pi.ps1` | PowerShell / pwsh（**不**搜索当前目录） | `.\pi` |
-| `pi` | Git Bash / MSYS（同样不搜索当前目录） | `./pi` |
+| `pi.cmd` | cmd.exe 与 PowerShell / pwsh（经 `PATHEXT` 解析） | `pi` |
+| `pi.ps1` | 仅由 `pi.cmd` 调用（自带 `-ExecutionPolicy Bypass`） | 不直接用 |
+| `pi` | Git Bash / MSYS | `pi` |
+
+**仓库根 `D:\AI\pi-space` 已加入用户 PATH**（`HKCU\Environment`，仅用户级，未动系统 PATH），所以任意目录下裸 `pi` 都能用，不限于仓库根。若在旧终端里 `pi` 找不到，重开终端让 PATH 生效即可；换机器后需重新添加该条目。
 
 它们启动的是 `.agents/scratch/pi` 这份本地工作副本，`refs/pi` 始终保持只读。副本不入库，换机器或清理 `.agents/` 后按下面步骤重建：
 

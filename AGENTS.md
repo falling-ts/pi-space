@@ -54,10 +54,9 @@ git -C refs/pi log --oneline --decorate -10 origin/main
 # 查看当前记录的指针
 git submodule status
 
-# 在仓库根运行本地 pi（源码直跑，启动器见根目录 pi.cmd / pi.ps1 / pi）
-pi --version        # cmd.exe：cmd 会搜索当前目录
-.\pi --version      # PowerShell：pwsh 不搜索当前目录，必须带 .\
-./pi --version      # Git Bash
+# 运行本地 pi（源码直跑，启动器见根目录 pi.cmd / pi.ps1 / pi）
+# 用户 PATH 已含 D:\AI\pi-space，故任意目录、任意 shell 都是裸命令：
+pi --version       # cmd / pwsh 命中 pi.cmd，Git Bash 命中 pi
 
 # 重建本地 pi 工作副本（.agents/scratch/ 不入库，需在换机器或清理后重做）
 git submodule update --init refs/pi
@@ -73,5 +72,6 @@ npm.cmd run hydrate:model-data                     # 联网生成 providers/data
 
 - 本空间远程仓库：`origin` → `git@github.com:falling-ts/pi-space.git`（分支 `main`）
 - 子模块：`refs/pi` → <https://github.com/earendil-works/pi>（跟踪分支 `main`）
-- 本地 pi 启动器：根目录 `pi.cmd` / `pi.ps1` / `pi`，运行的是 `.agents/scratch/pi` 这份工作副本（上游 `1b347794` 的复制），未改动任何用户/系统 PATH
+- 本地 pi 启动器：根目录 `pi.cmd` / `pi.ps1` / `pi`，运行的是 `.agents/scratch/pi` 这份工作副本（上游 `1b347794` 的复制）
+- 用户 PATH（`HKCU\Environment`，**仅用户级，未动系统 PATH**）含 `D:\AI\pi-space`：任意目录下裸 `pi` 直接可用；换机器需重新添加该条目
 - 仓库说明见 [`README.md`](README.md)（子目录不含 README）
