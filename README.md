@@ -49,9 +49,13 @@ git submodule add -b main <repo-url> refs/<name>
 
 | 文件 | 由谁使用 | 输入 |
 | --- | --- | --- |
-| `pi.cmd` | cmd.exe 与 PowerShell / pwsh（经 `PATHEXT` 解析） | `pi` |
-| `pi.ps1` | 仅由 `pi.cmd` 调用（自带 `-ExecutionPolicy Bypass`） | 不直接用 |
-| `pi` | Git Bash / MSYS | `pi` |
+| `pi.cmd` | cmd.exe 与 PowerShell / pwsh（经 `PATHEXT` 解析）；纯批处理，自己定位检出并直接调 `node`，不经 PowerShell 中转 | `pi` |
+| `pi.ps1` | PowerShell 原生入口，可独立使用；`pi.cmd` **不**调用它 | `.\pi.ps1` |
+| `pi` | Git Bash / MSYS；依赖 `pwd -W`，**不适用于 WSL 的 bash** | `pi` |
+
+三个启动器都把 `NODE_COMPILE_CACHE` 指向 `.agents/scratch/node-compile-cache`（V8 compile cache，约 3.5 MB / 1500 个文件，随 `.agents/` 一起忽略）。
+
+启动开销（本机实测，Node 22.20 / Windows，三次取最小值）：cmd 约 1011 ms、PowerShell 约 980 ms、Git Bash 约 1180 ms、不含启动器的直接 `node` 约 943 ms。其中 pi 自身逻辑只占约 55 ms（`PI_TIMING=1` 可见），其余是 538 个模块的类型剥离与模型目录 JSON 解析。
 
 **仓库根 `D:\AI\pi-space` 已加入用户 PATH**（`HKCU\Environment`，仅用户级，未动系统 PATH），所以任意目录下裸 `pi` 都能用，不限于仓库根。若在旧终端里 `pi` 找不到，重开终端让 PATH 生效即可；换机器后需重新添加该条目。
 

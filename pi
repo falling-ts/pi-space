@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # pi - run upstream pi from source (pi-space local launcher)
 #
-# Git Bash / MSYS variant of pi.ps1. Note that bash does not search the current
+# Git Bash / MSYS variant of pi.cmd. Note that bash does not search the current
 # directory, so run it as ./pi unless "." is on PATH.
 set -euo pipefail
 
-here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -W)"
+self="${BASH_SOURCE[0]}"
+here="$(cd "${self%/*}" && pwd -W)"
 pi_root="$here/.agents/scratch/pi"
 resolver="$pi_root/packages/coding-agent/src/experimental/source-resolver.ts"
 cli="$pi_root/packages/coding-agent/src/cli.ts"
