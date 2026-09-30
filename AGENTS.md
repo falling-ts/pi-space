@@ -17,9 +17,10 @@
 | 路径 | 用途 | 入库策略 |
 | --- | --- | --- |
 | `AGENTS.md` | 本文件：空间规则与工作约定 | ✅ 入库 |
-| `.agents/` | agent 运行期状态：临时脚本、草稿、缓存、任务中间产物 | 目录与说明入库，运行期内容忽略 |
-| `docs/` | 正式文档：调研笔记、架构分析、实验记录、决策记录 | ✅ 入库 |
-| `refs/` | 外部参考项目容器 | 容器与说明入库 |
+| `README.md` | 仓库说明；**本仓库唯一的 README** | ✅ 入库 |
+| `.agents/` | agent 运行期状态：临时脚本、草稿、缓存、任务中间产物 | 仅 `.gitkeep`，运行期内容忽略 |
+| `docs/` | 正式文档：调研笔记、架构分析、实验记录、决策记录 | 仅 `.gitkeep`，文档入库 |
+| `refs/` | 外部参考项目容器 | 仅 `.gitkeep` |
 | `refs/pi/` | 上游 `pi` 源码，以 **git submodule** 形式接入 | 父仓库只记录 commit 指针 |
 | `.gitignore` | 忽略规则（构建产物、环境密钥、编辑器/系统垃圾、agent 运行期状态） | ✅ 入库 |
 | `.gitmodules` | 子项目（submodule）声明：路径、URL、跟踪分支 | ✅ 入库 |
@@ -29,9 +30,10 @@
 1. **不要修改 `refs/pi/` 的工作区**，也不要在这个子模块里提交。它是上游镜像，需要试验时把代码复制到 `.agents/scratch/` 或 `docs/` 下再改。
 2. **改动子模块指针必须显式提交**：`git -C refs/pi fetch` 后父仓库会看到 `refs/pi` 有新 commit，只有在确认新 commit 可用后才 `git add refs/pi` 并在提交信息里写明上游 commit 与原因。
 3. **不要在父仓库里新增重名的顶层目录**；新增顶层内容前先更新本文件的目录表。
-4. 文档放在 `docs/`，一个主题一个文件，命名用 `短横线小写.md`（例：`pi-architecture.md`）。
-5. 提交信息用 `type(scope): summary`，例：`docs(pi): 记录 session 生命周期`。
-6. 临时产物写入 `.agents/tmp/`（已被忽略），不要污染工作区状态。
+4. **README 只在仓库根目录存在**（`README.md`）：子目录一律不新建 README，目录用途统一写在根 `README.md` 与本文件里；空目录用 `.gitkeep` 占位。
+5. 文档放在 `docs/`，一个主题一个文件，命名用 `短横线小写.md`（例：`pi-architecture.md`）。
+6. 提交信息用 `type(scope): summary`，例：`docs(pi): 记录 session 生命周期`。
+7. 临时产物写入 `.agents/tmp/`（已被忽略），不要污染工作区状态。
 
 ## 4. 常用命令
 
@@ -55,4 +57,4 @@ git submodule status
 
 - 本空间远程仓库：`origin` → `git@github.com:falling-ts/pi-space.git`（分支 `main`）
 - 子模块：`refs/pi` → <https://github.com/earendil-works/pi>（跟踪分支 `main`）
-- 详细说明见 [`refs/README.md`](refs/README.md)、[`docs/README.md`](docs/README.md)、[`.agents/README.md`](.agents/README.md)
+- 仓库说明见 [`README.md`](README.md)（子目录不含 README）
