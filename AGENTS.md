@@ -18,6 +18,8 @@
 | --- | --- | --- |
 | `AGENTS.md` | 本文件：空间规则与工作约定 | ✅ 入库 |
 | `README.md` | 仓库说明；**本仓库唯一的 README** | ✅ 入库 |
+| `pi.cmd` `pi.ps1` `pi` | 本地 pi 启动器（cmd / PowerShell / Git Bash），从源码直跑 | ✅ 入库 |
+| `.gitattributes` | 行尾约定：`*.cmd` 保持 CRLF，根 `pi` 保持 LF | ✅ 入库 |
 | `.agents/` | agent 运行期状态：临时脚本、草稿、缓存、任务中间产物 | 仅 `.gitkeep`，运行期内容忽略 |
 | `docs/` | 正式文档：调研笔记、架构分析、实验记录、决策记录 | 仅 `.gitkeep`，文档入库 |
 | `refs/` | 外部参考项目容器 | 仅 `.gitkeep` |
@@ -51,10 +53,25 @@ git -C refs/pi log --oneline --decorate -10 origin/main
 
 # 查看当前记录的指针
 git submodule status
+
+# 在仓库根运行本地 pi（源码直跑，启动器见根目录 pi.cmd / pi.ps1 / pi）
+pi --version        # cmd.exe：cmd 会搜索当前目录
+.\pi --version      # PowerShell：pwsh 不搜索当前目录，必须带 .\
+./pi --version      # Git Bash
+
+# 重建本地 pi 工作副本（.agents/scratch/ 不入库，需在换机器或清理后重做）
+git submodule update --init refs/pi
+robocopy refs\pi .agents\scratch\pi /E /XD .git    # 退出码 0-7 均视为成功
+cd .agents\scratch\pi
+npm.cmd ci --ignore-scripts                        # 必须用 npm.cmd，见下
+npm.cmd run hydrate:model-data                     # 联网生成 providers/data（上游 gitignore 的生成物）
 ```
+
+注意：本机继承的 `npm_*` 环境变量会让 `npm`（`npm.ps1`）走错路径并报 `Unknown command: "pm"`，务必用 `npm.cmd`。
 
 ## 5. 当前状态
 
 - 本空间远程仓库：`origin` → `git@github.com:falling-ts/pi-space.git`（分支 `main`）
 - 子模块：`refs/pi` → <https://github.com/earendil-works/pi>（跟踪分支 `main`）
+- 本地 pi 启动器：根目录 `pi.cmd` / `pi.ps1` / `pi`，运行的是 `.agents/scratch/pi` 这份工作副本（上游 `1b347794` 的复制），未改动任何用户/系统 PATH
 - 仓库说明见 [`README.md`](README.md)（子目录不含 README）

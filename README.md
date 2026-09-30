@@ -11,6 +11,8 @@ pi agent 的专属工作空间：围绕上游 [pi](https://github.com/earendil-w
 | --- | --- | --- |
 | `AGENTS.md` | 空间规则与工作约定 | ✅ |
 | `README.md` | 本文件；**仓库唯一的 README** | ✅ |
+| `pi.cmd` `pi.ps1` `pi` | 本地 pi 启动器：从源码直跑上游 pi | ✅ |
+| `.gitattributes` | 行尾约定：`*.cmd` 保持 CRLF，根 `pi` 保持 LF | ✅ |
 | `.agents/` | agent 运行期状态：`tmp/` `scratch/` `cache/` `sessions/` | 仅 `.gitkeep` |
 | `docs/` | 正式文档：调研笔记、架构分析、实验记录、决策记录 | 仅 `.gitkeep` |
 | `refs/` | 外部参考项目容器 | 仅 `.gitkeep` |
@@ -40,6 +42,31 @@ git submodule add -b main <repo-url> refs/<name>
 ```
 
 `refs/*` 为只读镜像：不要在其中提交、不要改动其工作区；需要改代码请复制到 `.agents/scratch/`。
+
+## 本地 pi 命令
+
+仓库根目录放了三个启动器，从源码直跑上游 pi（等价于上游 `pi-test.ps1` 的调用方式：`node --import <source-resolver> packages/coding-agent/src/cli.ts`，不编译、不安装到全局，也不改 PATH）：
+
+| 文件 | 适用 shell | 在仓库根输入 |
+| --- | --- | --- |
+| `pi.cmd` | cmd.exe（会搜索当前目录） | `pi` |
+| `pi.ps1` | PowerShell / pwsh（**不**搜索当前目录） | `.\pi` |
+| `pi` | Git Bash / MSYS（同样不搜索当前目录） | `./pi` |
+
+它们启动的是 `.agents/scratch/pi` 这份本地工作副本，`refs/pi` 始终保持只读。副本不入库，换机器或清理 `.agents/` 后按下面步骤重建：
+
+```powershell
+git submodule update --init refs/pi
+robocopy refs\pi .agents\scratch\pi /E /XD .git    # 退出码 0-7 都算成功
+cd .agents\scratch\pi
+npm.cmd ci --ignore-scripts
+npm.cmd run hydrate:model-data    # 生成 packages/ai/src/providers/data/
+```
+
+两个坑：
+
+- **必须用 `npm.cmd` 而不是 `npm`**：本机继承的 `npm_*` 环境变量（如 `npm_execpath` 指向 pnpm store）会让 `npm.ps1` 走错路径，报 `Unknown command: "pm"`。
+- **`hydrate:model-data` 必不可少且需要联网**：上游把 `packages/ai/src/providers/data/` 写进了 `.gitignore`，它是生成物；缺它时任何 `pi` 调用都会以 `ERR_MODULE_NOT_FOUND: .../providers/data/.manifest.json` 失败。该命令从 models.dev / OpenRouter / Vercel AI Gateway / Radius / NVIDIA NIM 拉取模型目录（`--strict`，任一失败即报错）。
 
 ## 文档计划（docs/）
 

@@ -1,0 +1,5 @@
+# 仓库根启动器的行尾约定
+# Windows 批处理用 CRLF（cmd.exe 对 LF-only 批处理的解析有边界情况）
+*.cmd text eol=crlf
+# bash 脚本必须 LF（CRLF 会破坏 shebang）
+/pi text eol=lf

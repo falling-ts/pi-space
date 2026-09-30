@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# pi - run upstream pi from source (pi-space local launcher)
+#
+# Git Bash / MSYS variant of pi.ps1. Note that bash does not search the current
+# directory, so run it as ./pi unless "." is on PATH.
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -W)"
+pi_root="$here/.agents/scratch/pi"
+resolver="$pi_root/packages/coding-agent/src/experimental/source-resolver.ts"
+cli="$pi_root/packages/coding-agent/src/cli.ts"
+
+if [ ! -f "$cli" ]; then
+	echo "pi: local checkout not found: $cli" >&2
+	echo 'pi: provision it first - see "Local pi command" in README.md' >&2
+	exit 1
+fi
+
+exec node --import "file:///$resolver" "$cli" "$@"
